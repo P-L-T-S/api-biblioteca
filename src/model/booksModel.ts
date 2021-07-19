@@ -1,13 +1,6 @@
 import config from '../db/config';
 import Config from '../db/config';
-
-interface IBookData {
-	titulo: string;
-	editora: string;
-	imagem: string;
-	autor: string;
-	release: Date;
-}
+import IBookData from '../interfaces/IBookData';
 
 export default {
 	async getAll() {

@@ -3,8 +3,8 @@ import booksController from './controllers/booksController';
 
 const router = Router();
 
-router.get('/', booksController.get);
-router.get('/:id', booksController.get);
+router.get('/', booksController.getAll);
+router.get('/:id', booksController.getById);
 router.put('/:id', booksController.update)
 router.post('/', booksController.create)
 router.delete('/:id', booksController.delete)

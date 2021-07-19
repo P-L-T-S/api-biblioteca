@@ -6,14 +6,35 @@ export default {
 	async getAll(req: Request, res: Response) {
 		const allBooks = await booksModel.getAll();
 
-		return res.status(200).send(JSON.stringify(allBooks));
+		const formatedOutputBooks = allBooks.map((book) => {
+			const release = utils.formatDateOutput(book.release);
+			return {
+				...book,
+				release,
+			};
+		});
+
+		return res.status(200).send(JSON.stringify(formatedOutputBooks));
 	},
-	async get(req: Request, res: Response) {
+	async getById(req: Request, res: Response) {
 		const { id } = req.params;
 
 		const book = await booksModel.get(Number(id));
 
-		res.status(200).send(JSON.stringify(book));
+		if (book == null || undefined) {
+			return res.status(404).send(
+				JSON.stringify({
+					message: 'O livro não existe ou foi excluido.',
+				})
+			);
+		}
+
+		const formatedOutputBook = {
+			...book,
+			release: utils.formatDateOutput(book.release),
+		};
+
+		res.status(200).send(JSON.stringify(formatedOutputBook));
 	},
 	async update(req: Request, res: Response) {
 		const { titulo, editora, imagem, autor, release } = req.body;
@@ -23,18 +44,24 @@ export default {
 			throw new Error('Campos invalidos, por favor tente novamente.');
 		}
 
-		const formatRelease = utils.formatDate(release);
+		const formatReleaseInput = utils.formatDateinput(release);
 
-		const validDate = utils.validDate(formatRelease);
-
-		console.log({ ...req.body, release: validDate });
+		const validDate = utils.validDate(formatReleaseInput);
 
 		const newBooks = await booksModel.update(
 			{ ...req.body, release: validDate },
 			Number(id)
 		);
 
-		return res.status(201).send(newBooks);
+		const formatedOutputBooks = newBooks.map((book) => {
+			const release = utils.formatDateOutput(book.release);
+			return {
+				...book,
+				release,
+			};
+		});
+
+		return res.status(201).send(formatedOutputBooks);
 	},
 	async create(req: Request, res: Response) {
 		const { titulo, editora, imagem, autor, release } = req.body;
@@ -43,24 +70,38 @@ export default {
 			throw new Error('Campos invalidos, por favor tente novamente.');
 		}
 
-		const formatRelease = utils.formatDate(release);
+		const formatReleaseInput = utils.formatDateinput(release);
 
-		const validDate = utils.validDate(formatRelease);
+		const validDate = utils.validDate(formatReleaseInput);
 
-		console.log({ ...req.body, release: validDate });
-
-		const newBook = await booksModel.create({
+		const newBooks = await booksModel.create({
 			...req.body,
 			release: validDate,
 		});
 
-		return res.status(201).send(JSON.stringify(newBook));
+		const formatedOutputBooks = newBooks.map((book) => {
+			const release = utils.formatDateOutput(book.release);
+			return {
+				...book,
+				release,
+			};
+		});
+
+		return res.status(201).send(JSON.stringify(formatedOutputBooks));
 	},
 	async delete(req: Request, res: Response) {
 		const { id } = req.params;
 
 		const newBooks = await booksModel.delete(Number(id));
 
-		res.status(200).send(JSON.stringify(newBooks));
+		const formatedOutputBooks = newBooks.map((book) => {
+			const release = utils.formatDateOutput(book.release);
+			return {
+				...book,
+				release,
+			};
+		});
+
+		res.status(200).send(JSON.stringify(formatedOutputBooks));
 	},
 };
